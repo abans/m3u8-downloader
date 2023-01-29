@@ -288,7 +288,7 @@ new Vue({
         if (this.finishList[index] && this.finishList[index].status === '') {
           this.finishList[index].status = 'downloading'
           this.ajax({
-            url: `https://py.acans.workers.dev/?u=${this.tsUrlList[index]}`,
+            url: `https://py.acans.workers.dev/?u=${encodeURIComponent(this.tsUrlList[index])}`,
             type: 'file',
             success: (file) => {
               this.dealTS(file, index, () => this.downloadIndex < this.rangeDownload.endSegment && !isPause && download())
