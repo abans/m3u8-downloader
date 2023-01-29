@@ -288,7 +288,7 @@ new Vue({
         if (this.finishList[index] && this.finishList[index].status === '') {
           this.finishList[index].status = 'downloading'
           this.ajax({
-            url: this.tsUrlList[index],
+            url: `https://py.acans.workers.dev/?u=${this.tsUrlList[index]}`,
             type: 'file',
             success: (file) => {
               this.dealTS(file, index, () => this.downloadIndex < this.rangeDownload.endSegment && !isPause && download())
@@ -468,91 +468,6 @@ new Vue({
       alert(tips)
       this.downloading = false
       this.tips = 'm3u8 视频在线提取工具';
-    },
-
-    // 拷贝本页面本身，解决跨域问题
-    copyCode() {
-      if (this.tips !== '代码下载中，请稍后') {
-        this.tips = '代码下载中，请稍后';
-        this.ajax({
-          url: './index.html',
-          success: (fileStr) => {
-            let fileList = fileStr.split(`<!--vue 前端框架--\>`);
-            let dom = fileList[0];
-            let script = fileList[1] + fileList[2];
-            script = script.split('// script注入');
-            script = script[1] + script[2];
-
-            if (this.url) {
-              script = script.replace(`url: '', // 在线链接`, `url: '${this.url}',`);
-            }
-
-            let codeStr = `
-          // 注入html
-          let $section = document.createElement('section')
-          $section.innerHTML = \`${dom}\`
-          $section.style.width = '100%'
-          $section.style.height = '800px'
-          $section.style.top = '0'
-          $section.style.left = '0'
-          $section.style.position = 'relative'
-          $section.style.zIndex = '9999'
-          $section.style.backgroundColor = 'white'
-          document.body.appendChild($section);
-
-          // 加载 ASE 解密
-          let $ase = document.createElement('script')
-          $ase.src = 'https://upyun.luckly-mjw.cn/lib/aes-decryptor.js'
-
-          // 加载 mp4 转码
-          let $mp4 = document.createElement('script')
-          $mp4.src = 'https://upyun.luckly-mjw.cn/lib/mux-mp4.js'
-
-          // 加载 vue
-          let $vue = document.createElement('script')
-          $vue.src = 'https://upyun.luckly-mjw.cn/lib/vue.js'
-
-          // 加载 stream 流式下载器
-          let $streamSaver = document.createElement('script')
-          $streamSaver.src = 'https://upyun.luckly-mjw.cn/lib/stream-saver.js'
-
-          // 监听 vue 加载完成，执行业务代码
-          $vue.addEventListener('load', () => {${script}})
-          document.body.appendChild($mp4);
-          document.body.appendChild($ase);
-          document.body.appendChild($streamSaver);
-          document.body.appendChild($vue);
-          alert('注入成功，请滚动到页面底部，若白屏则等待资源加载')
-          `;
-            this.copyToClipboard(codeStr);
-            this.tips = '复制成功，打开视频网页控制台，注入本代码';
-          },
-          fail: () => {
-            this.alertError('链接不正确，请查看链接是否有效');
-          },
-        })
-      }
-    },
-
-    // 拷贝剪切板
-    copyToClipboard(content) {
-      clearTimeout(this.timeouter)
-
-      if (!document.queryCommandSupported('copy')) {
-        return false
-      }
-
-      let $input = document.createElement('textarea')
-      $input.style.opacity = '0'
-      $input.value = content
-      document.body.appendChild($input)
-      $input.select()
-
-      const result = document.execCommand('copy')
-      document.body.removeChild($input)
-      $input = null
-
-      return result
     },
 
   }
