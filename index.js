@@ -307,9 +307,9 @@ new Vue({
       }
 
       // 建立多少个 ajax 线程
-      for (let i = 0; i < Math.min(6, this.rangeDownload.targetSegment - this.finishNum); i++) {
+      //for (let i = 0; i < Math.min(6, this.rangeDownload.targetSegment - this.finishNum); i++) {
         download()
-      }
+      //}
     },
 
     // 处理 ts 片段，AES 解密、mp4 转码
